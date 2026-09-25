@@ -11,6 +11,7 @@ import {
 	type DefaultReactSuggestionItem,
 } from "@blocknote/react";
 import { Lightbulb } from "lucide-react";
+import { t } from "#/lib/i18n";
 
 // FR-11: Callout — emoji + inline text on a tinted surface. Exports to markdown as a quote.
 const createCallout = createReactBlockSpec(
@@ -54,10 +55,11 @@ export type Editor = BlockNoteEditor<
 export const calloutSlashItem = (
 	editor: Editor,
 ): DefaultReactSuggestionItem => ({
-	title: "Callout",
-	subtext: "Highlighted box with an emoji",
+	title: t("editor.callout"),
+	subtext: t("editor.calloutHint"),
 	aliases: ["callout", "note", "info", "tip"],
-	group: "Basic blocks",
+	// Same group as Quote, in whatever language the editor UI is in.
+	group: editor.dictionary.slash_menu.quote.group,
 	icon: <Lightbulb size={18} />,
 	onItemClick: () =>
 		insertOrUpdateBlockForSlashMenu(editor, { type: "callout" }),

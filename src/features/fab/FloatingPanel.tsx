@@ -6,6 +6,7 @@ import {
 	useState,
 } from "react";
 import { ui } from "#/app/state";
+import { t } from "#/lib/i18n";
 import { cn } from "#/lib/utils";
 import { panelPlacement, type Viewport } from "./position";
 import { useIsMobile } from "./viewport";
@@ -100,7 +101,7 @@ export function FloatingPanel({
 		<div
 			ref={ref}
 			role="dialog"
-			aria-label="Menu"
+			aria-label={t("common.menu")}
 			onKeyDown={onKeyDown}
 			style={{
 				...p.horizontal,
@@ -134,7 +135,7 @@ function BottomSheet({
 			<div
 				ref={panelRef}
 				role="dialog"
-				aria-label="Menu"
+				aria-label={t("common.menu")}
 				onKeyDown={onKeyDown}
 				style={{ transform: dy ? `translateY(${dy}px)` : undefined }}
 				className="slide-in-from-bottom animate-in fixed inset-x-0 bottom-0 z-50 flex max-h-[85dvh] flex-col rounded-t-2xl border-t border-border bg-surface pb-[env(safe-area-inset-bottom)] text-[15px] text-text shadow-float-lg duration-200"

@@ -1,6 +1,7 @@
 import type { ClassValue } from "clsx";
 import { clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { getLocale, t } from "./i18n";
 
 export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs));
@@ -13,10 +14,6 @@ export const modKey = isMac ? "⌘" : "Ctrl+";
 export const altKey = isMac ? "⌥" : "Alt+";
 export const shiftKey = isMac ? "⇧" : "Shift+";
 
-const rtf = new Intl.RelativeTimeFormat("en", {
-	numeric: "auto",
-	style: "narrow",
-});
 const UNITS: [Intl.RelativeTimeFormatUnit, number][] = [
 	["year", 31_536_000_000],
 	["month", 2_592_000_000],
@@ -26,15 +23,19 @@ const UNITS: [Intl.RelativeTimeFormatUnit, number][] = [
 	["minute", 60_000],
 ];
 export function timeAgo(ts: number, now = Date.now()) {
+	const rtf = new Intl.RelativeTimeFormat(getLocale(), {
+		numeric: "auto",
+		style: "narrow",
+	});
 	const diff = ts - now;
 	for (const [unit, ms] of UNITS) {
 		if (Math.abs(diff) >= ms) return rtf.format(Math.round(diff / ms), unit);
 	}
-	return "just now";
+	return t("common.justNow");
 }
 
 export function docTitle(title: string | undefined) {
-	return title?.trim() || "Untitled";
+	return title?.trim() || t("common.untitled");
 }
 
 export function wordStats(markdown: string) {

@@ -4,17 +4,20 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). FR numb
 
 ## [Unreleased] — 2026-09-25
 
+### Added
+- **i18n with English and Bahasa Indonesia.** Strings live in `src/locales/<code>.json`, and new files are picked up automatically. The format supports `{placeholders}` and plurals via `Intl.PluralRules`. There is no i18n dependency (`src/lib/i18n.ts`).
+- **Language setting** in Settings → Appearance: Automatic (browser language) or a specific language. The choice is stored in IndexedDB and syncs across tabs. It also updates `<html lang>` and date/number formatting, and switches the BlockNote editor menus to the same language when BlockNote has that translation.
+- `src/locales/README.md`: a contributor guide for adding a language, plus a test that checks every locale for missing/unknown keys and mismatched placeholders.
+- All P0 and most P1 features from the PRD — details below.
+- Unit tests (Vitest + `fake-indexeddb`): FAB positioning, document/settings repository, search.
+- E2E tests (Playwright, system Chrome, desktop + mobile): autosave, command palette, trash/restore, FAB drag, export/import, theme, offline, language switch.
+
 ### Changed
-- **UI and all docs are now in English** (`docs/PRD.md`, `docs/screen-design.md`, `CLAUDE.md`, this changelog, every app string, `lang="en"`, `en` date/number formatting).
+- **All docs are now in English**; the UI defaults to the browser language (`docs/PRD.md`, `docs/screen-design.md`, `CLAUDE.md`, this changelog).
 - Migrated from TanStack Start + Cloudflare Workers to a pure **Vite + React SPA** (no SSR). Package manager switched to pnpm.
 - Replaced the template demo theme with the design tokens from `docs/screen-design.md` (CSS variables `--bg`, `--surface`, `--accent`, etc. via `light-dark()`).
 - Fonts are bundled locally (`@fontsource-variable/*`) instead of loaded from Google Fonts.
 - Animation uses CSS / `tw-animate-css`; the `motion` library is not used.
-
-### Added
-- All P0 and most P1 features from the PRD — details below.
-- Unit tests (Vitest + `fake-indexeddb`): FAB positioning, document/settings repository, search.
-- E2E tests (Playwright, system Chrome, desktop + mobile): autosave, command palette, trash/restore, FAB drag, export/import, theme, offline.
 
 ---
 
@@ -144,6 +147,7 @@ Legend: ✅ done · 🟡 partial / not fully tested · ❌ not done
 - FAB position preview diagram in Settings → Floating button.
 
 ## Known issues
+- In Bahasa Indonesia, the BlockNote menus (slash menu, formatting toolbar, block menu) stay in English because BlockNote has no Indonesian translation yet.
 - Typing `` ```const `` + space throws "Language const is not supported" (BlockNote's input rule treats `const` as a language name). `` ```ts `` + space works.
 - Code highlight colors didn't show in a dark-mode screenshot; check whether Shiki just loads late.
 - Testing Library is installed but unused (no component tests yet).

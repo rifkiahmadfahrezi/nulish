@@ -31,6 +31,7 @@ import { Dialog } from "#/components/Dialog";
 import { useActiveDocs } from "#/db/documents";
 import { getSetting } from "#/db/settings";
 import { copyDocMarkdown, exportBackup, pickAndImport } from "#/features/io/io";
+import { t } from "#/lib/i18n";
 import { altKey, docTitle, modKey, shiftKey, timeAgo } from "#/lib/utils";
 import { buildIndex, plain } from "./search";
 
@@ -43,7 +44,7 @@ export function CommandPalette() {
 		<Dialog
 			open={palette}
 			onClose={() => ui.set((s) => ({ ...s, palette: false }))}
-			label="Command palette"
+			label={t("palette.label")}
 			className="mt-[15vh] mb-auto max-w-[560px]"
 		>
 			<Palette />
@@ -75,9 +76,14 @@ function Palette() {
 	};
 	const docId = currentDoc.get();
 	const actions = [
-		{ label: "New page", icon: Plus, hint: `${modKey}${altKey}N`, run: newDoc },
 		{
-			label: "Toggle theme",
+			label: t("common.newPage"),
+			icon: Plus,
+			hint: `${modKey}${altKey}N`,
+			run: newDoc,
+		},
+		{
+			label: t("palette.toggleTheme"),
 			icon: Moon,
 			hint: `${modKey}${shiftKey}L`,
 			run: cycleTheme,
@@ -85,25 +91,25 @@ function Palette() {
 		...(docId
 			? [
 					{
-						label: "Export markdown",
+						label: t("palette.exportMarkdown"),
 						icon: Download,
 						hint: `${modKey}${shiftKey}E`,
 						run: exportCurrent,
 					},
 					{
-						label: "Copy as markdown",
+						label: t("common.copyAsMarkdown"),
 						icon: Clipboard,
 						run: () => copyDocMarkdown(docId),
 					},
 				]
 			: []),
-		{ label: "Import .md", icon: Upload, run: pickAndImport },
-		{ label: "Back up all data (.zip)", icon: Archive, run: exportBackup },
-		{ label: "Pages", icon: FileText, run: () => openPanel("pages") },
-		{ label: "Trash", icon: Trash2, run: () => openPanel("trash") },
-		{ label: "Settings", icon: Settings, run: () => openSettings() },
+		{ label: t("common.importMd"), icon: Upload, run: pickAndImport },
+		{ label: t("palette.backupAll"), icon: Archive, run: exportBackup },
+		{ label: t("common.pages"), icon: FileText, run: () => openPanel("pages") },
+		{ label: t("common.trash"), icon: Trash2, run: () => openPanel("trash") },
+		{ label: t("common.settings"), icon: Settings, run: () => openSettings() },
 		{
-			label: "Toggle full width",
+			label: t("palette.toggleWidth"),
 			icon: Maximize2,
 			run: async () =>
 				setAppearance(
@@ -112,7 +118,7 @@ function Palette() {
 				),
 		},
 		{
-			label: "Keyboard shortcuts",
+			label: t("common.keyboardShortcuts"),
 			icon: Keyboard,
 			run: () => ui.set((s) => ({ ...s, shortcuts: true })),
 		},
@@ -123,15 +129,15 @@ function Palette() {
 			<Command.Input
 				value={query}
 				onValueChange={setQuery}
-				placeholder="Search pages or commands…"
+				placeholder={t("palette.placeholder")}
 				className="h-12 shrink-0 border-b border-border bg-transparent px-4 text-base outline-none placeholder:text-faint"
 			/>
 			<Command.List className="min-h-0 overflow-y-auto p-1.5 [&_[cmdk-group-heading]]:px-2.5 [&_[cmdk-group-heading]]:pt-2 [&_[cmdk-group-heading]]:pb-1 [&_[cmdk-group-heading]]:text-[11px] [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-faint [&_[cmdk-group-heading]]:uppercase">
 				<Command.Empty className="px-4 py-8 text-center text-muted-foreground">
-					No results for “{q}”.
+					{t("palette.noResults", { query: q })}
 				</Command.Empty>
 				{pages.length > 0 && (
-					<Command.Group heading="Pages">
+					<Command.Group heading={t("common.pages")}>
 						{pages.map(({ doc, snippet }) => (
 							<Command.Item
 								key={doc.id}
@@ -171,7 +177,7 @@ function Palette() {
 					</Command.Group>
 				)}
 				{actions.length > 0 && (
-					<Command.Group heading="Actions">
+					<Command.Group heading={t("palette.actions")}>
 						{actions.map(({ label, icon: Icon, hint, run: fn }) => (
 							<Command.Item
 								key={label}
@@ -190,9 +196,9 @@ function Palette() {
 				)}
 			</Command.List>
 			<div className="hidden shrink-0 gap-3 border-t border-border px-4 py-2 text-xs text-faint sm:flex">
-				<span>↑↓ navigate</span>
-				<span>↵ open</span>
-				<span>esc close</span>
+				<span>{t("palette.navigate")}</span>
+				<span>{t("palette.open")}</span>
+				<span>{t("palette.close")}</span>
 			</div>
 		</Command>
 	);

@@ -3,12 +3,14 @@ import { preloadSettings } from "#/db/settings";
 import { importFiles } from "#/features/io/io";
 import { initPwa } from "#/features/pwa/pwa";
 import { applyAppearance } from "#/features/settings/theme";
+import { resolveLocale, setLocale, t } from "#/lib/i18n";
 import { currentDoc, openDoc, openPalette, toast } from "./state";
 
 /** Runs before first render: settings, trash purge, PWA, launch params, initial document. */
 export async function boot() {
 	try {
 		const settings = await preloadSettings();
+		setLocale(resolveLocale(settings.language));
 		applyAppearance(settings);
 		purgeOldTrash();
 		initPwa();
@@ -72,8 +74,7 @@ export async function boot() {
 		toast({
 			variant: "error",
 			duration: 0,
-			message:
-				"Browser storage is unavailable (private mode?). Your writing will not be saved.",
+			message: t("app.storageUnavailable"),
 		});
 	}
 }

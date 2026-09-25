@@ -13,6 +13,7 @@ export const DEFAULT_SETTINGS: Settings = {
 	spellcheck: true,
 	showWordCount: true,
 	onboarded: false,
+	language: "auto",
 };
 
 export async function getSetting<K extends SettingKey>(

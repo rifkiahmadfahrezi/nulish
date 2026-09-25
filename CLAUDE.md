@@ -19,7 +19,7 @@ When working on a feature, mention the FR numbers in the commit message and summ
 - Animation: CSS (`tw-animate-css`) · PWA: `vite-plugin-pwa` (`injectManifest` mode)
 - Tests: Vitest + Testing Library + `fake-indexeddb`; E2E: Playwright (system Chrome)
 - Package manager: pnpm
-- UI language: English
+- i18n: own tiny `t()` in `src/lib/i18n.ts`, strings in `src/locales/<code>.json` (en, id)
 
 ## Folder structure
 ```
@@ -35,7 +35,8 @@ src/
     io/           # .md import/export, zip backup
     pwa/          # SW registration, install prompt, update flow
   db/             # Dexie schema, migrations, repository functions
-  lib/            # utils
+  lib/            # utils, i18n
+  locales/        # translation JSON files (see src/locales/README.md)
   sw.ts           # service worker (injectManifest)
 ```
 
@@ -46,6 +47,7 @@ src/
 - **Colors only from CSS variable tokens** (`--bg`, `--surface`, `--text`, etc. in `screen-design.md`). Don't hardcode hex values in components.
 - Every UI feature must be checked in **light & dark mode** and at **390px** width.
 - Respect `prefers-reduced-motion`.
+- **No hardcoded UI text:** every user-visible string goes through `t("key")`. Add new keys to `en.json` **and** `id.json` (`pnpm test` checks both have the same keys and `{placeholders}`).
 - Dexie schema migrations always go through `db.version(n).upgrade()`; never change old versions.
 
 ## Commands

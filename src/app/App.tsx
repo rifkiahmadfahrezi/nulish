@@ -8,6 +8,7 @@ import { CommandPalette } from "#/features/search/CommandPalette";
 import { SettingsModal } from "#/features/settings/SettingsModal";
 import { ShortcutsDialog } from "#/features/settings/ShortcutsDialog";
 import { applyAppearance } from "#/features/settings/theme";
+import { resolveLocale, setLocale, t, useLocale } from "#/lib/i18n";
 import { newDoc } from "./actions";
 import { currentDoc } from "./state";
 import { Toaster } from "./Toaster";
@@ -23,13 +24,14 @@ export function App() {
 	const doc = useDoc(id);
 	useGlobalShortcuts();
 	useAppearanceSync();
+	const locale = useLanguageSync();
 
 	return (
 		<>
 			<main>
 				{doc && doc.deletedAt === null ? (
 					<Suspense>
-						<DocEditor key={doc.id} doc={doc} />
+						<DocEditor key={`${doc.id}:${locale}`} doc={doc} />
 					</Suspense>
 				) : (
 					(!id || doc === null || doc?.deletedAt) && <EmptyState />
@@ -43,6 +45,16 @@ export function App() {
 			<Toaster />
 		</>
 	);
+}
+
+/**
+ * Applies the language setting (here or from another tab). Subscribing App to the locale
+ * re-renders the whole tree, so every t() call picks up the new language.
+ */
+function useLanguageSync() {
+	const language = useSetting("language");
+	useEffect(() => setLocale(resolveLocale(language)), [language]);
+	return useLocale();
 }
 
 /** Keeps <html> in sync with settings changed here, in another tab, or by the OS theme. */
@@ -68,13 +80,13 @@ function EmptyState() {
 	return (
 		<div className="grid min-h-dvh place-items-center px-5 text-center">
 			<div className="space-y-3">
-				<p className="text-muted-foreground">No documents yet.</p>
+				<p className="text-muted-foreground">{t("app.noDocuments")}</p>
 				<button
 					type="button"
 					onClick={newDoc}
 					className="h-9 rounded-md bg-primary px-4 font-medium text-primary-foreground hover:opacity-90"
 				>
-					Create document
+					{t("common.createDocument")}
 				</button>
 				<p>
 					<button
@@ -82,7 +94,7 @@ function EmptyState() {
 						onClick={pickAndImport}
 						className="text-sm text-muted-foreground hover:underline"
 					>
-						Import .md
+						{t("common.importMd")}
 					</button>
 				</p>
 			</div>

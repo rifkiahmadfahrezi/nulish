@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { t } from "#/lib/i18n";
 import { importFiles } from "./io";
 
 const hasFiles = (e: DragEvent) => e.dataTransfer?.types.includes("Files");
@@ -50,7 +51,7 @@ export function DropOverlay() {
 	return (
 		<div className="pointer-events-none fixed inset-0 z-50 grid place-items-center bg-background/90">
 			<div className="rounded-lg border-2 border-dashed border-primary px-10 py-8 text-muted-foreground">
-				Drop .md files to import
+				{t("io.dropHint")}
 			</div>
 		</div>
 	);

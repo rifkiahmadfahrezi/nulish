@@ -1,6 +1,6 @@
 import "@blocknote/shadcn/style.css";
 import { filterSuggestionItems } from "@blocknote/core/extensions";
-import { en } from "@blocknote/core/locales";
+import * as blockNoteLocales from "@blocknote/core/locales";
 import {
 	getDefaultReactSlashMenuItems,
 	SuggestionMenuController,
@@ -21,12 +21,19 @@ import { saveDoc } from "#/db/documents";
 import { useSetting } from "#/db/settings";
 import { exportBackup, pickAndImport } from "#/features/io/io";
 import { useResolvedTheme } from "#/features/settings/theme";
+import { getLocale, t } from "#/lib/i18n";
 import { docTitle } from "#/lib/utils";
 import { IconPicker } from "./IconPicker";
 import { MobileBar } from "./MobileBar";
 import { calloutSlashItem, type Editor, schema } from "./schema";
 
 const AUTOSAVE_MS = 400;
+
+/** BlockNote ships many UI languages; use the current one if it has it, else English. */
+const blockNoteDictionary = () =>
+	// biome-ignore lint/performance/noDynamicNamespaceImportAccess: every BlockNote locale must stay available
+	blockNoteLocales[getLocale() as keyof typeof blockNoteLocales] ??
+	blockNoteLocales.en;
 const CONFLICT_TOAST = "doc-conflict";
 
 /** Mounted once per document (keyed by id). `doc` is the live row; only its first value seeds the editor. */
@@ -42,12 +49,13 @@ export function DocEditor({ doc }: { doc: Doc }) {
 		initialContent: doc.content.length ? (doc.content as never) : undefined,
 		uploadFile: (file) => putAsset(doc.id, file),
 		resolveFileUrl: resolveAssetUrl,
+		// Read once: App remounts the editor when the language changes.
 		dictionary: {
-			...en,
+			...blockNoteDictionary(),
 			placeholders: {
-				...en.placeholders,
-				default: "Type '/' for commands…",
-				emptyDocument: "Start writing, or type '/' for commands",
+				...blockNoteDictionary().placeholders,
+				default: t("editor.placeholder"),
+				emptyDocument: t("editor.emptyPlaceholder"),
 			},
 		},
 	}) as unknown as Editor;
@@ -83,12 +91,10 @@ export function DocEditor({ doc }: { doc: Doc }) {
 			toast({
 				id: "save-error",
 				variant: "error",
-				message: quota
-					? "Storage is full — changes are not saved."
-					: "Failed to save changes.",
+				message: quota ? t("editor.quotaFull") : t("editor.saveFailed"),
 				action: quota
-					? { label: "Export backup", run: exportBackup }
-					: { label: "Retry", run: flush },
+					? { label: t("editor.exportBackup"), run: exportBackup }
+					: { label: t("common.retry"), run: flush },
 				duration: 0,
 			});
 		}
@@ -128,10 +134,10 @@ export function DocEditor({ doc }: { doc: Doc }) {
 		if (JSON.stringify(doc.content) === lastContent.current) return;
 		toast({
 			id: CONFLICT_TOAST,
-			message: "This document was changed in another tab",
+			message: t("editor.conflict"),
 			duration: 0,
 			action: {
-				label: "Reload",
+				label: t("common.reload"),
 				run: () => {
 					lastContent.current = JSON.stringify(doc.content);
 					pending.current = {};
@@ -171,8 +177,8 @@ export function DocEditor({ doc }: { doc: Doc }) {
 					ref={titleRef}
 					rows={1}
 					value={title}
-					placeholder="Untitled"
-					aria-label="Document title"
+					placeholder={t("common.untitled")}
+					aria-label={t("editor.titleLabel")}
 					spellCheck={spellcheck}
 					onChange={(e) => {
 						setTitle(e.target.value.replace(/\n/g, ""));
@@ -233,7 +239,7 @@ function EmptyHints() {
 					className="underline-offset-4 hover:underline"
 					onClick={() => pickAndImport()}
 				>
-					Import .md
+					{t("common.importMd")}
 				</button>
 				<span className="text-faint">·</span>
 				<button
@@ -241,12 +247,10 @@ function EmptyHints() {
 					className="underline-offset-4 hover:underline"
 					onClick={() => ui.set((s) => ({ ...s, shortcuts: true }))}
 				>
-					View shortcuts
+					{t("common.viewShortcuts")}
 				</button>
 			</div>
-			<p className="text-xs text-faint">
-				Stored in this browser. No account, no server.
-			</p>
+			<p className="text-xs text-faint">{t("editor.storedLocally")}</p>
 		</div>
 	);
 }

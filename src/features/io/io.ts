@@ -3,6 +3,7 @@ import { flushAll, openDoc, toast } from "#/app/state";
 import { allAssets, putAssets } from "#/db/assets";
 import type { Asset, Doc } from "#/db/db";
 import { allDocs, createDoc, getDoc, putDocs } from "#/db/documents";
+import { t } from "#/lib/i18n";
 import { docTitle, slugify } from "#/lib/utils";
 
 export function download(name: string, data: BlobPart, type: string) {
@@ -47,7 +48,7 @@ export async function copyDocMarkdown(id: string) {
 	const doc = await getDoc(id);
 	if (!doc) return;
 	await navigator.clipboard.writeText(docToMarkdown(doc));
-	toast({ message: "Markdown copied", variant: "success" });
+	toast({ message: t("io.copied"), variant: "success" });
 }
 
 // ---- FR-41 ----
@@ -87,12 +88,12 @@ export async function importFiles(files: File[]) {
 	if (ok)
 		toast({
 			variant: "success",
-			message: ok === 1 ? "1 document imported" : `${ok} documents imported`,
+			message: t("io.imported", { count: ok }),
 		});
 	if (rejected || failed)
 		toast({
 			variant: "error",
-			message: `${rejected + failed} file(s) skipped — only UTF-8 .md files can be imported.`,
+			message: t("io.skipped", { count: rejected + failed }),
 		});
 }
 
@@ -175,12 +176,12 @@ export async function restoreBackup(file: File) {
 		await putAssets(assets);
 		toast({
 			variant: "success",
-			message: `Backup restored: ${docs.length} documents`,
+			message: t("io.restored", { count: docs.length }),
 		});
 	} catch {
 		toast({
 			variant: "error",
-			message: `"${file.name}" is not a valid Inkwell backup.`,
+			message: t("io.invalidBackup", { name: file.name }),
 		});
 	}
 }

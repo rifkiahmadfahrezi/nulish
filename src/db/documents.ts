@@ -44,11 +44,14 @@ export async function saveDoc(
 	await db.documents.update(id, { ...patch, updatedAt });
 }
 
-export async function duplicateDoc(id: string) {
+export async function duplicateDoc(
+	id: string,
+	copyTitle = (title: string) => `${title} (copy)`,
+) {
 	const src = await db.documents.get(id);
 	if (!src) return null;
 	return createDoc({
-		title: src.title ? `${src.title} (copy)` : "",
+		title: src.title ? copyTitle(src.title) : "",
 		icon: src.icon,
 		content: src.content,
 		markdown: src.markdown,

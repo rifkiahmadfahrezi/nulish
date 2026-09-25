@@ -28,6 +28,8 @@ export interface Settings {
 	spellcheck: boolean;
 	showWordCount: boolean;
 	onboarded: boolean;
+	/** "auto" (browser language) or a locale code from src/locales. */
+	language: string;
 }
 
 export type SettingKey = keyof Settings;

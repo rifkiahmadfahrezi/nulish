@@ -11,6 +11,7 @@ import {
 import { setSetting, useSetting } from "#/db/settings";
 import { PagesPanel } from "#/features/documents/PagesPanel";
 import { TrashPanel } from "#/features/documents/TrashPanel";
+import { t } from "#/lib/i18n";
 import { cn } from "#/lib/utils";
 import { FabMenu } from "./FabMenu";
 import { FAB_ID, FloatingPanel } from "./FloatingPanel";
@@ -160,7 +161,7 @@ export function Fab() {
 				ref={btnRef}
 				id={FAB_ID}
 				type="button"
-				aria-label={open ? "Close menu" : "Open menu"}
+				aria-label={open ? t("fab.close") : t("fab.open")}
 				aria-haspopup="menu"
 				aria-expanded={open}
 				hidden={kbOpen}
@@ -224,7 +225,7 @@ export function Fab() {
 					}}
 					className="fade-in animate-in fixed z-50 max-w-56 -translate-y-1/2 rounded-md bg-foreground px-3 py-2 text-xs text-background shadow-float"
 				>
-					The menu lives here — drag to move it.
+					{t("fab.hint")}
 				</div>
 			)}
 
@@ -279,11 +280,11 @@ function StatusDot() {
 			)}
 			<span className="sr-only" aria-live="polite">
 				{status === "saving"
-					? "Saving…"
+					? t("status.saving")
 					: status === "saved"
-						? "Saved"
+						? t("status.saved")
 						: status === "error"
-							? "Save failed"
+							? t("status.failed")
 							: ""}
 			</span>
 		</>

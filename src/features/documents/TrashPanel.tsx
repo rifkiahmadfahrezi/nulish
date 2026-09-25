@@ -7,6 +7,7 @@ import {
 	restoreDoc,
 	useTrashedDocs,
 } from "#/db/documents";
+import { t } from "#/lib/i18n";
 import { docTitle, timeAgo } from "#/lib/utils";
 import { IconBtn, PanelHeader } from "./PagesPanel";
 
@@ -23,20 +24,20 @@ export function TrashPanel() {
 
 	return (
 		<div className="flex min-h-0 flex-col">
-			<PanelHeader title="Trash" />
+			<PanelHeader title={t("common.trash")} />
 			<div className="px-2 pb-2">
 				<input
 					value={filter}
 					onChange={(e) => setFilter(e.target.value)}
-					placeholder="Filter trash…"
-					aria-label="Filter trash"
+					placeholder={t("trash.filter")}
+					aria-label={t("trash.filter")}
 					className="h-8 w-full rounded-md border border-border bg-transparent px-2.5 outline-none placeholder:text-faint focus:border-primary"
 				/>
 			</div>
 			<ul className="min-h-0 overflow-y-auto border-t border-border p-1.5">
 				{docs && !docs.length && (
 					<li className="px-2.5 py-6 text-center text-muted-foreground">
-						Trash is empty.
+						{t("trash.empty")}
 					</li>
 				)}
 				{list.map((d) => (
@@ -48,22 +49,22 @@ export function TrashPanel() {
 						<div className="min-w-0 flex-1">
 							<p className="truncate">{docTitle(d.title)}</p>
 							<p className="text-xs text-faint">
-								Deleted {timeAgo(d.deletedAt ?? 0)}
+								{t("trash.deletedAgo", { time: timeAgo(d.deletedAt ?? 0) })}
 							</p>
 						</div>
 						<IconBtn
-							label="Restore"
+							label={t("common.restore")}
 							icon={<RotateCcw {...ICON} />}
 							onClick={() => restoreDoc(d.id).then(() => openDoc(d.id))}
 						/>
 						<IconBtn
-							label="Delete forever"
+							label={t("trash.deleteForever")}
 							icon={<Trash2 {...ICON} />}
 							className="hover:text-danger"
 							onClick={() => {
 								if (
 									confirm(
-										`Delete "${docTitle(d.title)}" forever? This cannot be undone.`,
+										t("trash.confirmDelete", { title: docTitle(d.title) }),
 									)
 								)
 									deleteForever([d.id]);
@@ -73,19 +74,17 @@ export function TrashPanel() {
 				))}
 			</ul>
 			<div className="flex items-center justify-between border-t border-border px-3 py-2 text-xs text-faint">
-				<span>Deleted automatically after 30 days</span>
+				<span>{t("trash.autoDelete")}</span>
 				{!!docs?.length && (
 					<button
 						type="button"
 						className="text-danger hover:underline"
 						onClick={() => {
-							if (
-								confirm(`Delete ${docs.length} document(s) in Trash forever?`)
-							)
+							if (confirm(t("trash.confirmEmpty", { count: docs.length })))
 								emptyTrash();
 						}}
 					>
-						Empty trash
+						{t("trash.emptyTrash")}
 					</button>
 				)}
 			</div>

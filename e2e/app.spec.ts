@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { expect, type Page, test } from "@playwright/test";
 
-const title = (page: Page) => page.getByRole("textbox", { name: "Document title" });
+const title = (page: Page) => page.getByRole("textbox", { name: /Document title|Judul dokumen/ });
 const editor = (page: Page) => page.locator(".bn-editor");
 
 async function write(page: Page, heading: string, body: string) {
@@ -114,4 +114,16 @@ test("works offline after the first visit (FR-24/77)", async ({ page, context })
 	await expect(title(page)).toHaveValue("Offline");
 	await expect(editor(page)).toContainText("Written without internet.");
 	await context.setOffline(false);
+});
+
+test("switches the UI language and remembers it", async ({ page }) => {
+	await openMenu(page);
+	await page.getByRole("menuitem", { name: "Settings" }).click();
+	await page.getByRole("combobox", { name: "Language" }).selectOption("id");
+	await expect(page.getByRole("button", { name: "Tampilan" })).toBeVisible();
+	await page.keyboard.press("Escape");
+	await expect(title(page)).toHaveAttribute("placeholder", "Tanpa judul");
+	await page.reload();
+	await expect(page.locator("html")).toHaveAttribute("lang", "id");
+	await expect(page.getByRole("textbox", { name: "Judul dokumen" })).toBeVisible();
 });

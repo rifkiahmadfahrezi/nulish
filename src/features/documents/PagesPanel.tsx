@@ -23,6 +23,7 @@ import {
 import { setSetting, useSetting } from "#/db/settings";
 import { itemClass } from "#/features/fab/FloatingPanel";
 import { copyDocMarkdown, exportDoc } from "#/features/io/io";
+import { getLocale, t } from "#/lib/i18n";
 import { cn, docTitle, timeAgo } from "#/lib/utils";
 
 const ICON = { size: 16, strokeWidth: 1.5 } as const;
@@ -32,7 +33,7 @@ export function sortDocs(docs: Doc[], sortBy: Settings["sortBy"]) {
 	const sorted = [...docs];
 	if (sortBy === "title")
 		sorted.sort((a, b) =>
-			docTitle(a.title).localeCompare(docTitle(b.title), "en"),
+			docTitle(a.title).localeCompare(docTitle(b.title), getLocale()),
 		);
 	else if (sortBy === "created")
 		sorted.sort((a, b) => b.createdAt - a.createdAt);
@@ -61,10 +62,10 @@ export function PagesPanel() {
 	return (
 		<div className="flex min-h-0 flex-col">
 			<PanelHeader
-				title="Pages"
+				title={t("common.pages")}
 				action={
 					<IconBtn
-						label="New page"
+						label={t("common.newPage")}
 						onClick={newDoc}
 						icon={<Plus {...ICON} />}
 					/>
@@ -75,12 +76,12 @@ export function PagesPanel() {
 					data-autofocus={coarse ? undefined : true}
 					value={filter}
 					onChange={(e) => setFilter(e.target.value)}
-					placeholder="Filter pages…"
-					aria-label="Filter pages"
+					placeholder={t("pages.filter")}
+					aria-label={t("pages.filter")}
 					className="h-8 w-full rounded-md border border-border bg-transparent px-2.5 outline-none placeholder:text-faint focus:border-primary"
 				/>
 				<label className="flex items-center gap-1 text-xs text-muted-foreground">
-					Sort:
+					{t("pages.sort")}
 					<select
 						value={sortBy}
 						onChange={(e) =>
@@ -88,40 +89,40 @@ export function PagesPanel() {
 						}
 						className="bg-transparent text-text outline-none"
 					>
-						<option value="updated">Last edited</option>
-						<option value="created">Created</option>
-						<option value="title">Title A–Z</option>
+						<option value="updated">{t("pages.sortUpdated")}</option>
+						<option value="created">{t("pages.sortCreated")}</option>
+						<option value="title">{t("pages.sortTitle")}</option>
 					</select>
 				</label>
 			</div>
 			<div
 				role="listbox"
-				aria-label="Pages"
+				aria-label={t("common.pages")}
 				className="min-h-0 overflow-y-auto border-t border-border p-1.5"
 			>
 				{docs && !docs.length && (
 					<div className="px-2.5 py-6 text-center text-muted-foreground">
-						<p>No pages yet.</p>
+						<p>{t("pages.empty")}</p>
 						<button
 							type="button"
 							onClick={newDoc}
 							className="mt-2 text-primary hover:underline"
 						>
-							Create document
+							{t("common.createDocument")}
 						</button>
 					</div>
 				)}
 				{docs && docs.length > 0 && !pinned.length && !rest.length && (
 					<p className="px-2.5 py-6 text-center text-muted-foreground">
-						No matches.
+						{t("pages.noMatches")}
 					</p>
 				)}
 				{pinned.length > 0 && (
-					<Group label="Pinned" docs={pinned} active={active} />
+					<Group label={t("pages.pinned")} docs={pinned} active={active} />
 				)}
 				{rest.length > 0 && (
 					<Group
-						label={pinned.length ? "All" : null}
+						label={pinned.length ? t("pages.all") : null}
 						docs={rest}
 						active={active}
 					/>
@@ -163,7 +164,7 @@ function Row({ doc, active }: { doc: Doc; active: boolean }) {
 				// biome-ignore lint/a11y/noAutofocus: rename was explicitly requested
 				autoFocus
 				defaultValue={doc.title}
-				aria-label="Rename"
+				aria-label={t("pages.rename")}
 				onFocus={(e) => e.currentTarget.select()}
 				onBlur={(e) => {
 					saveDoc(doc.id, { title: e.currentTarget.value.trim() });
@@ -224,20 +225,29 @@ function RowMenu({ doc, onRename }: { doc: Doc; onRename: () => void }) {
 	};
 	const items = [
 		{
-			label: doc.pinned ? "Unpin" : "Pin",
+			label: doc.pinned ? t("pages.unpin") : t("pages.pin"),
 			icon: doc.pinned ? PinOff : Pin,
 			run: () => togglePin(doc.id, !doc.pinned),
 		},
-		{ label: "Rename", icon: Pencil, run: onRename },
-		{ label: "Duplicate", icon: Copy, run: () => duplicateDoc(doc.id) },
-		{ label: "Export .md", icon: Download, run: () => exportDoc(doc.id) },
+		{ label: t("pages.rename"), icon: Pencil, run: onRename },
 		{
-			label: "Copy as markdown",
+			label: t("pages.duplicate"),
+			icon: Copy,
+			run: () =>
+				duplicateDoc(doc.id, (title) => t("pages.copyTitle", { title })),
+		},
+		{
+			label: t("common.exportMd"),
+			icon: Download,
+			run: () => exportDoc(doc.id),
+		},
+		{
+			label: t("common.copyAsMarkdown"),
 			icon: Clipboard,
 			run: () => copyDocMarkdown(doc.id),
 		},
 		{
-			label: "Move to Trash",
+			label: t("pages.moveToTrash"),
 			icon: Trash2,
 			run: () => trashWithUndo(doc.id),
 			danger: true,
@@ -250,7 +260,7 @@ function RowMenu({ doc, onRename }: { doc: Doc; onRename: () => void }) {
 				ref={btn}
 				type="button"
 				popoverTarget={id}
-				aria-label={`Options for ${docTitle(doc.title)}`}
+				aria-label={t("pages.options", { title: docTitle(doc.title) })}
 				className="absolute right-1 grid size-7 place-items-center rounded-sm text-muted-foreground opacity-0 hover:bg-surface-active focus-visible:opacity-100 group-focus-within/row:opacity-100 group-hover/row:opacity-100 pointer-coarse:opacity-100"
 			>
 				<MoreHorizontal {...ICON} />
@@ -309,7 +319,7 @@ export function PanelHeader({
 	return (
 		<div className="flex h-11 shrink-0 items-center gap-1 px-2">
 			<IconBtn
-				label="Back"
+				label={t("common.back")}
 				onClick={() => openPanel("menu")}
 				icon={<ChevronLeft {...ICON} />}
 			/>

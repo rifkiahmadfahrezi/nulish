@@ -1,6 +1,7 @@
 import { registerSW } from "virtual:pwa-register";
 import { flushAll, pwa, toast } from "#/app/state";
 import { db } from "#/db/db";
+import { t } from "#/lib/i18n";
 
 let updateSW: ((reload?: boolean) => Promise<void>) | undefined;
 
@@ -10,8 +11,8 @@ export function initPwa() {
 		onNeedRefresh() {
 			pwa.set((s) => ({ ...s, updateReady: true }));
 			toast({
-				message: "A new version of Inkwell is available",
-				action: { label: "Reload", run: applyUpdate },
+				message: t("pwa.updateReady"),
+				action: { label: t("common.reload"), run: applyUpdate },
 				duration: 8000,
 			});
 		},
@@ -35,8 +36,8 @@ export function initPwa() {
 		flushAll().finally(() => db.close());
 		toast({
 			id: "db-version",
-			message: "Inkwell was updated in another tab.",
-			action: { label: "Reload", run: () => location.reload() },
+			message: t("pwa.updatedElsewhere"),
+			action: { label: t("common.reload"), run: () => location.reload() },
 			duration: 0,
 		});
 		return false;
@@ -44,7 +45,7 @@ export function initPwa() {
 	db.on("blocked", () => {
 		toast({
 			id: "db-blocked",
-			message: "Close other Inkwell tabs to finish the update.",
+			message: t("pwa.closeOtherTabs"),
 			duration: 0,
 		});
 	});
@@ -65,8 +66,7 @@ export async function promptInstall() {
 		return;
 	}
 	toast({
-		message:
-			"In Safari: tap Share → Add to Home Screen. The installed app has separate storage from Safari tabs — move documents via Backup/Restore.",
+		message: t("pwa.iosHint"),
 		duration: 10000,
 	});
 }

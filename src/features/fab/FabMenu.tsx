@@ -32,6 +32,7 @@ import { useDoc, useTrashedDocs } from "#/db/documents";
 import { useSetting } from "#/db/settings";
 import { pickAndImport } from "#/features/io/io";
 import { applyUpdate, promptInstall } from "#/features/pwa/pwa";
+import { getLocale, t } from "#/lib/i18n";
 import { altKey, cn, modKey, shiftKey, wordStats } from "#/lib/utils";
 import { itemClass } from "./FloatingPanel";
 
@@ -45,7 +46,11 @@ export function FabMenu() {
 	const ios = /iPhone|iPad/.test(navigator.userAgent) && !installed;
 
 	return (
-		<div role="menu" aria-label="Menu" className="flex min-h-0 flex-col">
+		<div
+			role="menu"
+			aria-label={t("common.menu")}
+			className="flex min-h-0 flex-col"
+		>
 			<div className="overflow-y-auto p-1.5">
 				<button
 					type="button"
@@ -58,7 +63,7 @@ export function FabMenu() {
 					)}
 				>
 					<Search {...ICON} />
-					<span className="flex-1">Search…</span>
+					<span className="flex-1">{t("menu.search")}</span>
 					<Kbd>{modKey}K</Kbd>
 				</button>
 				<Item
@@ -66,7 +71,7 @@ export function FabMenu() {
 					onClick={() => openPanel("pages")}
 					right={<ChevronRight {...ICON} />}
 				>
-					Pages
+					{t("common.pages")}
 				</Item>
 				<Item
 					icon={<Plus {...ICON} />}
@@ -78,7 +83,7 @@ export function FabMenu() {
 						</Kbd>
 					}
 				>
-					New page
+					{t("common.newPage")}
 				</Item>
 				<Sep />
 				<Item
@@ -92,10 +97,10 @@ export function FabMenu() {
 						</Kbd>
 					}
 				>
-					Export .md
+					{t("common.exportMd")}
 				</Item>
 				<Item icon={<Upload {...ICON} />} onClick={pickAndImport}>
-					Import .md
+					{t("common.importMd")}
 				</Item>
 				<Sep />
 				<ThemeRow />
@@ -108,14 +113,14 @@ export function FabMenu() {
 						) : null
 					}
 				>
-					Trash
+					{t("common.trash")}
 				</Item>
 				<Item icon={<SettingsIcon {...ICON} />} onClick={() => openSettings()}>
-					Settings
+					{t("common.settings")}
 				</Item>
 				{(installPrompt || ios) && (
 					<Item icon={<Smartphone {...ICON} />} onClick={promptInstall}>
-						Install app
+						{t("menu.installApp")}
 					</Item>
 				)}
 				{updateReady && (
@@ -123,7 +128,7 @@ export function FabMenu() {
 						icon={<RefreshCw {...ICON} className="text-primary" />}
 						onClick={applyUpdate}
 					>
-						Update available — Reload
+						{t("menu.updateAvailable")}
 					</Item>
 				)}
 			</div>
@@ -135,9 +140,9 @@ export function FabMenu() {
 function ThemeRow() {
 	const theme = useSetting("theme");
 	const options = [
-		{ value: "light", label: "Light", icon: Sun },
-		{ value: "dark", label: "Dark", icon: Moon },
-		{ value: "system", label: "System", icon: Monitor },
+		{ value: "light", label: t("common.light"), icon: Sun },
+		{ value: "dark", label: t("common.dark"), icon: Moon },
+		{ value: "system", label: t("common.system"), icon: Monitor },
 	] as const;
 	const Current = options.find((o) => o.value === theme)?.icon ?? Monitor;
 	return (
@@ -150,10 +155,10 @@ function ThemeRow() {
 				className="flex flex-1 items-center gap-2.5 outline-none focus-visible:underline"
 			>
 				<Current {...ICON} />
-				Theme
+				{t("common.theme")}
 			</button>
 			<fieldset
-				aria-label="Theme"
+				aria-label={t("common.theme")}
 				className="flex rounded-md bg-surface-hover p-0.5"
 			>
 				{options.map(({ value, label, icon: Icon }) => (
@@ -190,13 +195,13 @@ function MetaFooter({
 	const showCount = useSetting("showWordCount");
 	const stats = doc ? wordStats(doc.markdown) : null;
 	const statusText = {
-		idle: "Saved",
-		saved: "Saved",
-		saving: "Saving…",
-		error: "Save failed",
+		idle: t("status.saved"),
+		saved: t("status.saved"),
+		saving: t("status.saving"),
+		error: t("status.failed"),
 	}[status];
 	const fmt = (ts: number) =>
-		new Date(ts).toLocaleString("en", {
+		new Date(ts).toLocaleString(getLocale(), {
 			dateStyle: "medium",
 			timeStyle: "short",
 		});
@@ -208,21 +213,21 @@ function MetaFooter({
 				{stats && showCount && (
 					<>
 						{" · "}
-						{stats.words.toLocaleString("en")} words · {stats.minutes} min
+						{t("menu.words", { count: stats.words })} ·{" "}
+						{t("menu.minutes", { count: stats.minutes })}
 					</>
 				)}
 			</p>
 			{doc && showCount && (
-				<p className="mt-0.5" title={`Created ${fmt(doc.createdAt)}`}>
-					{stats?.chars.toLocaleString("en")} characters · edited{" "}
-					{fmt(doc.updatedAt)}
+				<p
+					className="mt-0.5"
+					title={t("menu.created", { date: fmt(doc.createdAt) })}
+				>
+					{t("menu.characters", { count: stats?.chars ?? 0 })} ·{" "}
+					{t("menu.edited", { date: fmt(doc.updatedAt) })}
 				</p>
 			)}
-			{offline && (
-				<p className="mt-0.5">
-					Offline — everything is still saved on this device
-				</p>
-			)}
+			{offline && <p className="mt-0.5">{t("menu.offline")}</p>}
 		</div>
 	);
 }

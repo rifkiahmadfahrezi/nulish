@@ -1,5 +1,6 @@
 import { SmilePlus } from "lucide-react";
 import { useId, useRef } from "react";
+import { t } from "#/lib/i18n";
 
 // FR-08. ponytail: fixed emoji set; paste any emoji into the input for others.
 const EMOJI =
@@ -29,7 +30,7 @@ export function IconPicker({
 				ref={btnRef}
 				type="button"
 				popoverTarget={id}
-				aria-label={icon ? "Change icon" : "Add icon"}
+				aria-label={icon ? t("editor.changeIcon") : t("editor.addIcon")}
 				className={
 					icon
 						? "mb-2 -ml-1 rounded-md px-1 text-[56px] leading-none hover:bg-surface-hover"
@@ -38,7 +39,7 @@ export function IconPicker({
 			>
 				{icon ?? (
 					<>
-						<SmilePlus size={16} strokeWidth={1.5} /> Add icon
+						<SmilePlus size={16} strokeWidth={1.5} /> {t("editor.addIcon")}
 					</>
 				)}
 			</button>
@@ -69,7 +70,7 @@ export function IconPicker({
 				</div>
 				<div className="mt-2 flex gap-2 border-t border-border pt-2">
 					<input
-						placeholder="Other emoji…"
+						placeholder={t("editor.otherEmoji")}
 						maxLength={8}
 						className="h-8 min-w-0 flex-1 rounded-sm border border-border bg-transparent px-2 text-sm outline-none focus:border-primary"
 						onKeyDown={(e) => {
@@ -83,7 +84,7 @@ export function IconPicker({
 							onClick={() => choose(undefined)}
 							className="rounded-sm px-2 text-sm text-danger hover:bg-surface-hover"
 						>
-							Remove
+							{t("common.remove")}
 						</button>
 					)}
 				</div>
