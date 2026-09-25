@@ -27,7 +27,7 @@ test("autosaves and restores the document after reload (FR-20/21)", async ({ pag
 	await page.reload();
 	await expect(title(page)).toHaveValue("Meeting Notes");
 	await expect(editor(page)).toContainText("Content that must survive.");
-	await expect(page).toHaveTitle("Meeting Notes — Inkwell");
+	await expect(page).toHaveTitle("Meeting Notes — Nulish");
 });
 
 test("command palette searches content and opens the page (FR-30/31)", async ({ page, isMobile }) => {

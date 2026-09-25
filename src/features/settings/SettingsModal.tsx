@@ -270,7 +270,7 @@ function DataSettings() {
 function About() {
 	return (
 		<div className="space-y-3 text-muted-foreground">
-			<h3 className="text-base font-medium text-text">Inkwell</h3>
+			<h3 className="text-base font-medium text-text">Nulish</h3>
 			<p>{t("settings.aboutText")}</p>
 			<p>{t("settings.aboutOffline")}</p>
 			<button

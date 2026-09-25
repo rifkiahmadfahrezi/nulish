@@ -75,7 +75,7 @@ function useAppearanceSync() {
 /** PRD §10: no active documents. */
 function EmptyState() {
 	useEffect(() => {
-		document.title = "Inkwell";
+		document.title = "Nulish";
 	}, []);
 	return (
 		<div className="grid min-h-dvh place-items-center px-5 text-center">

@@ -1,6 +1,6 @@
 # Translations
 
-Every UI string in Inkwell lives in this folder, one JSON file per language. Files are picked up automatically, so adding a language needs no code changes.
+Every UI string in Nulish lives in this folder, one JSON file per language. Files are picked up automatically, so adding a language needs no code changes.
 
 ## Add a language
 
@@ -26,4 +26,4 @@ With **Automatic** selected, the app picks the first browser language that has a
 
 ## Editor menus
 
-The slash menu, the formatting toolbar and the block menu come from [BlockNote](https://www.blocknotejs.org/). BlockNote has its own translations and Inkwell uses them automatically when one exists for your language code. If your language isn't one of them, those menus stay in English. Contribute that translation upstream to BlockNote.
+The slash menu, the formatting toolbar and the block menu come from [BlockNote](https://www.blocknotejs.org/). BlockNote has its own translations and Nulish uses them automatically when one exists for your language code. If your language isn't one of them, those menus stay in English. Contribute that translation upstream to BlockNote.

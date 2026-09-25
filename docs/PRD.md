@@ -1,13 +1,13 @@
 # PRD — Local-First Markdown Editor
 
-> Working name: **Inkwell** (may change)
+> Product name: **Nulish**
 > Document version: 1.0 · Status: Draft
 
 ---
 
 ## 1. Summary
 
-Inkwell is a web-based markdown editor with a Notion-like writing experience (block-based, slash commands, drag handles), but **100% local-first**: all data lives in the user's browser IndexedDB. No login, no server, no account. Open → start writing.
+Nulish is a web-based markdown editor with a Notion-like writing experience (block-based, slash commands, drag handles), but **100% local-first**: all data lives in the user's browser IndexedDB. No login, no server, no account. Open → start writing.
 
 ## 2. Background & Problem
 
@@ -148,13 +148,13 @@ Since all data already lives in IndexedDB, the only thing that needs internet is
 - **FR-83** IndexedDB schema migrations (Dexie `version().upgrade()`) must be backward compatible; if an old tab is still open with the old schema version, show a banner "Close other tabs to finish the update" (`versionchange` / `blocked` events).
 
 **OS integration (P1–P2)**
-- **FR-84** `file_handlers` in the manifest: open `.md` files directly in Inkwell from the file manager (Chromium desktop) — P1.
+- **FR-84** `file_handlers` in the manifest: open `.md` files directly in Nulish from the file manager (Chromium desktop) — P1.
 - **FR-85** `share_target`: receive text/URLs shared from other apps and create a new document from them — P2.
 - **FR-86** `launch_handler: { client_mode: "focus-existing" }` so opening the app doesn't create duplicate windows — P1.
 
 ## 7. Data Model (IndexedDB)
 
-Database: `inkwell` · Schema version: 1
+Database: `inkwell` (internal name kept from the working title so existing data survives) · Schema version: 1
 
 ```ts
 // table: documents
@@ -255,7 +255,6 @@ Content is stored as editor JSON (source of truth) + a markdown cache. Rationale
 
 ## 13. Open Questions
 
-- Final product name?
 - BlockNote (fast to build) or Tiptap (full control)?
 - Nested pages (documents inside documents) in v2?
 - Optional sync in the future (e.g., to a local folder via the File System Access API)?

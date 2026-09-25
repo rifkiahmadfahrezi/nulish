@@ -1,4 +1,4 @@
-# Screen Design — Inkwell (Local-First Markdown Editor)
+# Screen Design — Nulish (Local-First Markdown Editor)
 
 > Version 2 · Concept: **zero chrome**. No sidebar, no top bar. The screen contains only the writing. All navigation and actions live in **a single draggable floating button (FAB)**.
 >
@@ -9,7 +9,7 @@
 ## 0. Global Prompt (paste first)
 
 ```
-Design an ultra-minimal, distraction-free web app called "Inkwell" — a
+Design an ultra-minimal, distraction-free web app called "Nulish" — a
 local-first, Notion-like markdown editor. There is NO sidebar, NO top bar,
 NO header, NO footer, NO login or avatars. The whole screen is just the
 document on a plain background.

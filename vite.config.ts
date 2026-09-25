@@ -22,8 +22,8 @@ export default defineConfig({
 			},
 			manifest: {
 				id: "/",
-				name: "Inkwell",
-				short_name: "Inkwell",
+				name: "Nulish",
+				short_name: "Nulish",
 				description: "Local-first markdown editor. No account, no server.",
 				start_url: "/",
 				scope: "/",

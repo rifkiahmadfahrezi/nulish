@@ -152,7 +152,7 @@ export function DocEditor({ doc }: { doc: Doc }) {
 
 	// FR-52: title doubles as the tab title.
 	useEffect(() => {
-		document.title = `${docTitle(title)} — Inkwell`;
+		document.title = `${docTitle(title)} — Nulish`;
 	}, [title]);
 
 	// New/empty doc: start in the title.

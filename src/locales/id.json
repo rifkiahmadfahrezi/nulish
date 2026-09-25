@@ -127,7 +127,7 @@
 	"settings.deleteAll": "Hapus semua data",
 	"settings.confirmDeleteAll": "Hapus SEMUA dokumen, gambar, dan pengaturan? Tindakan ini tidak bisa dibatalkan.",
 	"settings.aboutText": "Markdown editor local-first. Semua dokumen tersimpan di browser ini (IndexedDB) — tanpa akun, tanpa server, tanpa analytics.",
-	"settings.aboutOffline": "Setelah kunjungan pertama, Inkwell bisa dipakai sepenuhnya offline.",
+	"settings.aboutOffline": "Setelah kunjungan pertama, Nulish bisa dipakai sepenuhnya offline.",
 
 	"shortcuts.palette": "Command palette / cari",
 	"shortcuts.newDoc": "Dokumen baru",
@@ -168,10 +168,10 @@
 		"other": "{count} file dilewati — hanya file .md berenkode UTF-8 yang bisa diimpor."
 	},
 	"io.restored": { "other": "Backup dipulihkan: {count} dokumen" },
-	"io.invalidBackup": "\"{name}\" bukan file backup Inkwell yang valid.",
+	"io.invalidBackup": "\"{name}\" bukan file backup Nulish yang valid.",
 
-	"pwa.updateReady": "Versi baru Inkwell tersedia",
-	"pwa.updatedElsewhere": "Inkwell diperbarui di tab lain.",
-	"pwa.closeOtherTabs": "Tutup tab Inkwell lain untuk menyelesaikan update.",
+	"pwa.updateReady": "Versi baru Nulish tersedia",
+	"pwa.updatedElsewhere": "Nulish diperbarui di tab lain.",
+	"pwa.closeOtherTabs": "Tutup tab Nulish lain untuk menyelesaikan update.",
 	"pwa.iosHint": "Di Safari: ketuk Share → Add to Home Screen. Aplikasi terpasang punya penyimpanan terpisah dari tab Safari — pindahkan dokumen lewat Backup/Pulihkan."
 }

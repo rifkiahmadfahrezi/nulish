@@ -109,6 +109,7 @@ export function pickAndImport() {
 
 // ---- FR-42 backup / restore ----
 interface Manifest {
+	/** Internal id from the working title (Inkwell); kept so older backups still restore. */
 	app: "inkwell";
 	version: 1;
 	exportedAt: number;
@@ -142,7 +143,7 @@ export async function exportBackup() {
 
 	const date = new Date().toISOString().slice(0, 10);
 	download(
-		`inkwell-backup-${date}.zip`,
+		`nulish-backup-${date}.zip`,
 		zipSync(files, { level: 6 }),
 		"application/zip",
 	);
@@ -153,7 +154,7 @@ export async function restoreBackup(file: File) {
 	try {
 		const files = unzipSync(new Uint8Array(await file.arrayBuffer()));
 		const manifest = JSON.parse(strFromU8(files["manifest.json"])) as Manifest;
-		if (manifest.app !== "inkwell") throw new Error("not an Inkwell backup");
+		if (manifest.app !== "inkwell") throw new Error("not a Nulish backup");
 
 		const docs: Doc[] = [];
 		for (const { file: path, ...doc } of manifest.documents) {

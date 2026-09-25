@@ -1,4 +1,4 @@
-# Inkwell
+# Nulish
 
 Local-first, Notion-like markdown editor. Vite + React SPA, data in IndexedDB.
 

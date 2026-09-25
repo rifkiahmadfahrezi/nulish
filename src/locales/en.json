@@ -131,7 +131,7 @@
 	"settings.deleteAll": "Delete all data",
 	"settings.confirmDeleteAll": "Delete ALL documents, images and settings? This cannot be undone.",
 	"settings.aboutText": "Local-first markdown editor. All documents are stored in this browser (IndexedDB) — no account, no server, no analytics.",
-	"settings.aboutOffline": "After the first visit, Inkwell works fully offline.",
+	"settings.aboutOffline": "After the first visit, Nulish works fully offline.",
 
 	"shortcuts.palette": "Command palette / search",
 	"shortcuts.newDoc": "New document",
@@ -179,10 +179,10 @@
 		"one": "Backup restored: 1 document",
 		"other": "Backup restored: {count} documents"
 	},
-	"io.invalidBackup": "\"{name}\" is not a valid Inkwell backup.",
+	"io.invalidBackup": "\"{name}\" is not a valid Nulish backup.",
 
-	"pwa.updateReady": "A new version of Inkwell is available",
-	"pwa.updatedElsewhere": "Inkwell was updated in another tab.",
-	"pwa.closeOtherTabs": "Close other Inkwell tabs to finish the update.",
+	"pwa.updateReady": "A new version of Nulish is available",
+	"pwa.updatedElsewhere": "Nulish was updated in another tab.",
+	"pwa.closeOtherTabs": "Close other Nulish tabs to finish the update.",
 	"pwa.iosHint": "In Safari: tap Share → Add to Home Screen. The installed app has separate storage from Safari tabs — move documents via Backup/Restore."
 }

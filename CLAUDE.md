@@ -1,4 +1,4 @@
-# CLAUDE.md — Inkwell
+# CLAUDE.md — Nulish
 
 Local-first, Notion-like markdown editor for the web. No login, no server. All data in IndexedDB.
 

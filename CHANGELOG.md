@@ -13,6 +13,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). FR numb
 - E2E tests (Playwright, system Chrome, desktop + mobile): autosave, command palette, trash/restore, FAB drag, export/import, theme, offline, language switch.
 
 ### Changed
+- **Renamed the app from Inkwell to Nulish** (UI, manifest, docs, backup file name). Internal storage ids (`inkwell` IndexedDB database, `inkwell:appearance` localStorage key, `inkwell-asset:` image URLs, backup `manifest.json` `app` field) are unchanged, so existing data and backups keep working.
 - **All docs are now in English**; the UI defaults to the browser language (`docs/PRD.md`, `docs/screen-design.md`, `CLAUDE.md`, this changelog).
 - Migrated from TanStack Start + Cloudflare Workers to a pure **Vite + React SPA** (no SSR). Package manager switched to pnpm.
 - Replaced the template demo theme with the design tokens from `docs/screen-design.md` (CSS variables `--bg`, `--surface`, `--accent`, etc. via `light-dark()`).
