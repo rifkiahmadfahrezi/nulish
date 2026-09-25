@@ -1,9 +1,24 @@
 <!doctype html>
-<html lang="id">
+<html lang="en">
 	<head>
 		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content" />
 		<title>Inkwell</title>
+		<meta name="description" content="Local-first markdown editor. No account, no server." />
+		<meta name="theme-color" content="#ffffff" />
+		<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+		<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+		<script>
+			// FR-51: apply the last known appearance before first paint (IndexedDB is async).
+			try {
+				const s = JSON.parse(localStorage.getItem("inkwell:appearance") || "{}");
+				const dark = s.theme === "dark" || ((!s.theme || s.theme === "system") && matchMedia("(prefers-color-scheme: dark)").matches);
+				const r = document.documentElement;
+				r.dataset.theme = dark ? "dark" : "light";
+				if (s.bodyFont) r.dataset.font = s.bodyFont;
+				if (s.contentWidth) r.dataset.width = s.contentWidth;
+			} catch {}
+		</script>
 	</head>
 	<body>
 		<div id="root"></div>

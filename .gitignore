@@ -5,3 +5,5 @@ dist
 .env
 __unconfig*
 todos.json
+test-results
+playwright-report

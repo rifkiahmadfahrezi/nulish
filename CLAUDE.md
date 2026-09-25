@@ -1,56 +1,58 @@
 # CLAUDE.md — Inkwell
 
-Markdown editor web, local-first, Notion-like. Tanpa login, tanpa server. Semua data di IndexedDB.
+Local-first, Notion-like markdown editor for the web. No login, no server. All data in IndexedDB.
 
-## Dokumen acuan (baca dulu sebelum mengerjakan fitur)
-- `docs/prd.md` — requirement fungsional (FR-xx), model data, edge cases, milestone
-- `docs/screen-design.md` — design tokens, perilaku UI, spesifikasi floating button
-- `docs/design/` — hasil export Stitch / Claude Design (screenshot/HTML) bila ada
+## Reference docs (read before working on a feature)
+- `docs/PRD.md` — functional requirements (FR-xx), data model, edge cases, milestones
+- `docs/screen-design.md` — design tokens, UI behavior, floating button spec
+- `docs/design/` — Stitch / Claude Design exports (screenshots/HTML), if any
+- `CHANGELOG.md` — what's done and what's still open, per FR
 
-Saat mengerjakan fitur, sebutkan nomor FR yang dikerjakan di commit message dan ringkasan.
+When working on a feature, mention the FR numbers in the commit message and summary.
 
-## Stack (sudah diputuskan)
-- Vite + React 19 + TypeScript (strict), SPA murni — tanpa SSR
-- Tailwind CSS v4 + shadcn/ui (komponen di-copy ke `src/components/ui`)
+## Stack (decided)
+- Vite + React 19 + TypeScript (strict), pure SPA — no SSR
+- Tailwind CSS v4 + shadcn/ui (components copied into `src/components/ui`)
 - Editor: BlockNote (`@blocknote/react`, `@blocknote/shadcn`)
 - IndexedDB: Dexie + `dexie-react-hooks` (`useLiveQuery`)
-- Search: MiniSearch · Command palette: `cmdk` · Popover: Radix / Floating UI
-- Animasi: `motion` · PWA: `vite-plugin-pwa` (mode `injectManifest`)
-- Test: Vitest + Testing Library + `fake-indexeddb`; E2E: Playwright
+- Search: MiniSearch · Command palette: `cmdk` · Popovers/modals: native `popover` / `<dialog>`
+- Animation: CSS (`tw-animate-css`) · PWA: `vite-plugin-pwa` (`injectManifest` mode)
+- Tests: Vitest + Testing Library + `fake-indexeddb`; E2E: Playwright (system Chrome)
 - Package manager: pnpm
+- UI language: English
 
-## Struktur folder
+## Folder structure
 ```
 src/
-  app/            # root App, providers, routing sederhana (?doc=<id>)
-  components/ui/  # shadcn
+  app/            # root App, boot, global state, actions, simple routing (?doc=<id>)
+  components/     # shared components (Dialog); shadcn goes in components/ui
   features/
-    editor/       # BlockNote wrapper, slash menu, konversi markdown
-    documents/    # CRUD, trash, pin, panel Pages
-    fab/          # floating button draggable + menu
+    editor/       # BlockNote wrapper, slash menu, markdown conversion
+    documents/    # Pages & Trash panels
+    fab/          # draggable floating button + menu
     search/       # MiniSearch index + command palette
-    settings/     # modal settings, tema
-    io/           # import/export .md, backup zip
-    pwa/          # registrasi SW, install prompt, update flow
-  db/             # schema Dexie, migrasi, repository functions
+    settings/     # settings modal, theme
+    io/           # .md import/export, zip backup
+    pwa/          # SW registration, install prompt, update flow
+  db/             # Dexie schema, migrations, repository functions
   lib/            # utils
   sw.ts           # service worker (injectManifest)
 ```
 
-## Aturan penting
-- **Zero chrome:** jangan menambahkan sidebar, topbar, header, footer, atau tombol permanen selain FAB. Semua aksi lewat FAB, `⌘K`, atau shortcut.
-- **Data tidak boleh hilang:** semua tulis ke IndexedDB lewat fungsi di `src/db/`, jangan akses `db` langsung dari komponen. Autosave debounce 400ms, flush saat `visibilitychange`/`pagehide`.
-- **Tanpa network untuk konten:** tidak ada fetch yang membawa isi dokumen. Tidak ada analytics.
-- **Warna hanya dari token CSS variables** (`--bg`, `--surface`, `--text`, dll. di `screen-design.md`). Jangan hardcode hex di komponen.
-- Setiap fitur UI harus dicek di **light & dark mode** dan di lebar **390px**.
-- Hormati `prefers-reduced-motion`.
-- Migrasi skema Dexie selalu lewat `db.version(n).upgrade()`; jangan ubah versi lama.
+## Important rules
+- **Zero chrome:** don't add a sidebar, top bar, header, footer, or any permanent button besides the FAB. All actions go through the FAB, `⌘K`, or shortcuts.
+- **Data must never be lost:** all IndexedDB writes go through functions in `src/db/`; never access `db` directly from components. Autosave debounce 400ms, flush on `visibilitychange`/`pagehide`.
+- **No network for content:** no fetch may carry document content. No analytics.
+- **Colors only from CSS variable tokens** (`--bg`, `--surface`, `--text`, etc. in `screen-design.md`). Don't hardcode hex values in components.
+- Every UI feature must be checked in **light & dark mode** and at **390px** width.
+- Respect `prefers-reduced-motion`.
+- Dexie schema migrations always go through `db.version(n).upgrade()`; never change old versions.
 
-## Perintah
+## Commands
 - `pnpm dev` — dev server
-- `pnpm build && pnpm preview` — cek build + service worker (SW tidak aktif di dev)
-- `pnpm test` — unit test
-- `pnpm test:e2e` — Playwright
+- `pnpm build && pnpm preview` — check the build + service worker (SW is not active in dev)
+- `pnpm test` — unit tests
+- `pnpm test:e2e` — Playwright (make sure nothing else is serving on port 4173, or it reuses a stale build)
 - `pnpm lint` · `pnpm typecheck`
 
-Sebelum menyatakan tugas selesai: jalankan `pnpm typecheck && pnpm lint && pnpm test`.
+Before declaring a task done: run `pnpm typecheck && pnpm lint && pnpm test`.
