@@ -1,160 +1,160 @@
-# PRD — Markdown Editor Local-First
+# PRD — Local-First Markdown Editor
 
-> Nama kerja: **Inkwell** (bisa diganti)
-> Versi dokumen: 1.0 · Status: Draft
+> Working name: **Inkwell** (may change)
+> Document version: 1.0 · Status: Draft
 
 ---
 
-## 1. Ringkasan
+## 1. Summary
 
-Inkwell adalah markdown editor berbasis web dengan pengalaman menulis ala Notion (block-based, slash command, drag handle), tetapi **100% local-first**: semua data tersimpan di IndexedDB browser pengguna. Tidak ada login, tidak ada server, tidak ada akun. Buka → langsung menulis.
+Inkwell is a web-based markdown editor with a Notion-like writing experience (block-based, slash commands, drag handles), but **100% local-first**: all data lives in the user's browser IndexedDB. No login, no server, no account. Open → start writing.
 
-## 2. Latar Belakang & Masalah
+## 2. Background & Problem
 
-- Notion dan sejenisnya butuh akun, online, dan data tersimpan di server pihak ketiga.
-- Editor markdown lokal (Typora, Obsidian) butuh instalasi aplikasi desktop.
-- Editor markdown web sederhana biasanya hanya split-view (raw + preview) dan tidak nyaman untuk menulis panjang.
+- Notion and similar tools require an account, need to be online, and store data on third-party servers.
+- Local markdown editors (Typora, Obsidian) require installing a desktop app.
+- Simple web markdown editors are usually split-view only (raw + preview) and uncomfortable for long-form writing.
 
-**Peluang:** editor web yang instan, privat, nyaman seperti Notion, dan output-nya tetap markdown murni yang portabel.
+**Opportunity:** a web editor that is instant, private, as comfortable as Notion, and whose output is still plain, portable markdown.
 
-## 3. Tujuan
+## 3. Goals
 
-| Tujuan | Ukuran keberhasilan |
+| Goal | Success metric |
 |---|---|
-| Menulis bisa dimulai dalam < 2 detik setelah halaman dibuka | Time-to-first-keystroke < 2s (cold load) |
-| Data tidak pernah hilang | Autosave < 500ms setelah berhenti mengetik; 0 laporan data loss |
-| Mengelola banyak dokumen dengan mudah | Buat, cari, rename, hapus dokumen tanpa lebih dari 2 klik |
-| Portabel | Import/export `.md` round-trip tanpa kehilangan format dasar |
+| Writing can start within < 2 seconds of opening the page | Time-to-first-keystroke < 2s (cold load) |
+| Data is never lost | Autosave < 500ms after typing stops; 0 data-loss reports |
+| Managing many documents is easy | Create, find, rename, delete a document in no more than 2 clicks |
+| Portable | `.md` import/export round-trips without losing basic formatting |
 
 ### Non-Goals (v1)
-- Login, akun, sinkronisasi cloud, kolaborasi real-time
-- Database/tabel ala Notion, relasi antar halaman
-- Mobile app native (web responsive saja)
+- Login, accounts, cloud sync, real-time collaboration
+- Notion-style databases/tables, relations between pages
+- Native mobile app (responsive web only)
 - Plugin system
 
-## 4. Target Pengguna
+## 4. Target Users
 
-1. **Penulis/pelajar** — mencatat cepat, tidak mau repot daftar akun.
-2. **Developer** — menulis dokumentasi/README, butuh code block & export `.md`.
-3. **Pengguna yang peduli privasi** — ingin data hanya ada di perangkat sendiri.
+1. **Writers/students** — quick note-taking, don't want the hassle of signing up.
+2. **Developers** — write documentation/READMEs, need code blocks & `.md` export.
+3. **Privacy-conscious users** — want their data to exist only on their own device.
 
 ## 5. User Stories
 
-| ID | Sebagai… | Saya ingin… | Supaya… |
+| ID | As a… | I want… | So that… |
 |---|---|---|---|
-| US-01 | pengguna baru | langsung bisa menulis tanpa daftar | tidak ada hambatan |
-| US-02 | penulis | membuat lebih dari satu dokumen | memisahkan topik |
-| US-03 | penulis | tulisan tersimpan otomatis | tidak takut kehilangan data |
-| US-04 | penulis | mengetik `/` untuk memilih jenis block | format tanpa menghafal sintaks |
-| US-05 | pengguna markdown | mengetik `# `, `- `, `> ` dan langsung jadi format | alur menulis tetap cepat |
-| US-06 | pengguna | mencari dokumen berdasarkan judul/isi | cepat menemukan catatan lama |
-| US-07 | pengguna | mengganti tema dark/light | nyaman di mata |
-| US-08 | developer | export dokumen ke `.md` | dipakai di tempat lain |
-| US-09 | pengguna | import file `.md` | memindahkan catatan lama |
-| US-10 | pengguna | memulihkan dokumen yang terhapus | tidak menyesal salah hapus |
-| US-11 | pengguna | backup semua data ke satu file | aman saat ganti browser/perangkat |
+| US-01 | new user | to start writing without signing up | there is no friction |
+| US-02 | writer | to create more than one document | I can separate topics |
+| US-03 | writer | my writing saved automatically | I'm not afraid of losing data |
+| US-04 | writer | to type `/` to pick a block type | I can format without memorizing syntax |
+| US-05 | markdown user | typing `# `, `- `, `> ` to format immediately | my writing flow stays fast |
+| US-06 | user | to search documents by title/content | I can find old notes quickly |
+| US-07 | user | to switch between dark/light themes | it's easy on the eyes |
+| US-08 | developer | to export a document to `.md` | I can use it elsewhere |
+| US-09 | user | to import `.md` files | I can bring over old notes |
+| US-10 | user | to recover deleted documents | I don't regret an accidental delete |
+| US-11 | user | to back up all data to a single file | I'm safe when switching browsers/devices |
 
-## 6. Fitur & Requirement
+## 6. Features & Requirements
 
-### 6.1 Manajemen Dokumen (P0)
-- **FR-01** Membuat dokumen baru (dari menu floating button, command palette, atau shortcut `Ctrl/Cmd + Alt + N`).
-- **FR-02** Daftar dokumen di panel **Pages** yang dibuka dari floating button, urut berdasarkan `updatedAt` terbaru (opsi sort: judul A–Z, dibuat).
-- **FR-03** Judul dokumen = baris judul besar di atas editor (seperti Notion). Kosong → tampil "Untitled".
-- **FR-04** Rename langsung dari judul atau menu konteks di panel Pages.
-- **FR-05** Duplikat dokumen.
-- **FR-06** Hapus → masuk **Trash** (soft delete). Trash bisa restore atau hapus permanen. Auto-purge setelah 30 hari.
-- **FR-07** Pin/favorit dokumen (muncul di bagian atas panel Pages).
-- **FR-08** Emoji/ikon opsional per dokumen.
+### 6.1 Document Management (P0)
+- **FR-01** Create a new document (from the floating button menu, the command palette, or the `Ctrl/Cmd + Alt + N` shortcut).
+- **FR-02** Document list in the **Pages** panel opened from the floating button, sorted by most recent `updatedAt` (sort options: title A–Z, created).
+- **FR-03** Document title = the large title line above the editor (like Notion). Empty → shows "Untitled".
+- **FR-04** Rename directly from the title or from the context menu in the Pages panel.
+- **FR-05** Duplicate a document.
+- **FR-06** Delete → moves to **Trash** (soft delete). Trash supports restore or permanent delete. Auto-purge after 30 days.
+- **FR-07** Pin/favorite a document (appears at the top of the Pages panel).
+- **FR-08** Optional emoji/icon per document.
 
-### 6.2 Editor Notion-like (P0)
-- **FR-10** Block-based: setiap paragraf/heading/list adalah block.
-- **FR-11** Slash command `/` membuka menu block: Text, Heading 1–3, Bullet list, Numbered list, To-do, Quote, Code block, Divider, Callout, Image (URL/upload lokal), Table (P1).
-- **FR-12** Markdown shortcut saat mengetik: `#`, `##`, `###`, `-`/`*`, `1.`, `[]`, `>`, ```` ``` ````, `---`, `**bold**`, `*italic*`, `` `code` ``, `~~strike~~`.
-- **FR-13** Floating toolbar saat teks diseleksi: Bold, Italic, Strike, Code, Link, Turn into…
-- **FR-14** Drag handle (⋮⋮) di kiri block saat hover untuk memindahkan block; klik membuka menu block (hapus, duplikat, turn into).
-- **FR-15** Code block dengan syntax highlighting + pilih bahasa + tombol copy.
+### 6.2 Notion-like Editor (P0)
+- **FR-10** Block-based: every paragraph/heading/list is a block.
+- **FR-11** Slash command `/` opens the block menu: Text, Heading 1–3, Bullet list, Numbered list, To-do, Quote, Code block, Divider, Callout, Image (URL/local upload), Table (P1).
+- **FR-12** Markdown shortcuts while typing: `#`, `##`, `###`, `-`/`*`, `1.`, `[]`, `>`, ```` ``` ````, `---`, `**bold**`, `*italic*`, `` `code` ``, `~~strike~~`.
+- **FR-13** Floating toolbar when text is selected: Bold, Italic, Strike, Code, Link, Turn into…
+- **FR-14** Drag handle (⋮⋮) to the left of a block on hover to move the block; clicking it opens the block menu (delete, duplicate, turn into).
+- **FR-15** Code block with syntax highlighting + language picker + copy button.
 - **FR-16** Undo/redo (`Ctrl/Cmd + Z` / `Shift + Z`).
-- **FR-17** Placeholder "Ketik '/' untuk perintah…" pada block kosong.
-- **FR-18** Paste markdown/HTML otomatis dikonversi menjadi block.
+- **FR-17** Placeholder "Type '/' for commands…" on empty blocks.
+- **FR-18** Pasted markdown/HTML is automatically converted into blocks.
 
-### 6.3 Penyimpanan Local-First (P0)
-- **FR-20** Semua data disimpan di IndexedDB.
-- **FR-21** Autosave dengan debounce 300–500ms; indikator status berupa dot kecil di floating button (+ teks "Saved / Saving…" di dalam menu, dan `aria-live` untuk screen reader).
-- **FR-22** Request `navigator.storage.persist()` saat pertama kali membuat dokumen agar data tidak dihapus browser saat storage penuh.
-- **FR-23** Sinkron antar-tab: perubahan di satu tab tercermin di tab lain (BroadcastChannel / liveQuery).
-- **FR-24** Aplikasi berjalan penuh tanpa internet — detail di **6.8 PWA & Offline Support**.
+### 6.3 Local-First Storage (P0)
+- **FR-20** All data is stored in IndexedDB.
+- **FR-21** Autosave with a 300–500ms debounce; status indicator as a small dot on the floating button (+ "Saved / Saving…" text inside the menu, and `aria-live` for screen readers).
+- **FR-22** Request `navigator.storage.persist()` when the first document is created so the browser doesn't evict data when storage is full.
+- **FR-23** Cross-tab sync: changes in one tab are reflected in other tabs (BroadcastChannel / liveQuery).
+- **FR-24** The app works fully without internet — details in **6.8 PWA & Offline Support**.
 
-### 6.4 Pencarian (P0)
-- **FR-30** Command palette `Ctrl/Cmd + K`: cari dokumen (judul + isi), buat dokumen baru, ganti tema.
-- **FR-31** Hasil pencarian menampilkan potongan teks yang cocok dengan highlight.
+### 6.4 Search (P0)
+- **FR-30** Command palette `Ctrl/Cmd + K`: search documents (title + content), create a new document, switch theme.
+- **FR-31** Search results show a snippet of the matching text with highlighting.
 
 ### 6.5 Import / Export (P0–P1)
-- **FR-40** Export dokumen aktif ke `.md` (P0).
-- **FR-41** Import satu/banyak file `.md` (drag & drop ke window atau tombol) (P0).
-- **FR-42** Backup semua data ke `.zip` (berisi `.md` + `manifest.json`) dan restore dari file tersebut (P1).
-- **FR-43** Copy dokumen sebagai markdown ke clipboard (P1).
+- **FR-40** Export the active document to `.md` (P0).
+- **FR-41** Import one or many `.md` files (drag & drop onto the window, or a button) (P0).
+- **FR-42** Back up all data to a `.zip` (containing `.md` files + `manifest.json`) and restore from that file (P1).
+- **FR-43** Copy a document as markdown to the clipboard (P1).
 
-### 6.6 Tema & Tampilan (P0)
-- **FR-50** Tiga opsi tema: Light, Dark, System (default System).
-- **FR-51** Preferensi tersimpan di IndexedDB (tabel `settings`), diterapkan sebelum render pertama untuk mencegah flash.
-- **FR-52** **Zero chrome:** tidak ada sidebar, topbar, header, maupun footer. Layar hanya berisi dokumen; judul dokumen dipakai sebagai `document.title` tab browser.
-- **FR-53** Mode lebar konten: normal (≈720px) / full width.
+### 6.6 Theme & Appearance (P0)
+- **FR-50** Three theme options: Light, Dark, System (default System).
+- **FR-51** Preference is stored in IndexedDB (`settings` table) and applied before first render to prevent a flash.
+- **FR-52** **Zero chrome:** no sidebar, top bar, header, or footer. The screen contains only the document; the document title is used as the browser tab's `document.title`.
+- **FR-53** Content width mode: normal (≈720px) / full width.
 
 ### 6.6a Floating Button (P0)
-- **FR-55** Satu floating button (FAB) bulat 48px (52px mobile) sebagai satu-satunya UI permanen. Klik membuka menu: Search, Pages, New page, Export, Import, Theme, Trash, Settings, dan meta dokumen.
-- **FR-56** FAB bisa di-drag (mouse & touch). Gerakan < 5px dianggap klik. Saat dilepas, FAB snap ke tepi kiri/kanan terdekat (opsi: 4 sudut). Tidak bisa keluar layar; clamp 20px dari tepi.
-- **FR-57** Posisi FAB disimpan relatif (`{ side, y: 0–1 }`) di `settings.fabPosition` dan tetap benar saat resize. Default kanan bawah. Ada tombol "Reset posisi" di Settings.
-- **FR-58** Arah buka menu/panel menyesuaikan posisi FAB agar selalu di dalam viewport.
-- **FR-59** Auto-fade: 1 detik setelah mulai mengetik, FAB meredup (opacity 25%); kembali penuh saat mouse bergerak, pointer mendekat, atau FAB difokus. Bisa dimatikan di Settings.
-- **FR-59a** Aksesibel tanpa drag: `Ctrl/Cmd + .` membuka menu; `Alt + panah` memindahkan FAB saat fokus.
-- **FR-59b** Mobile: menu & panel tampil sebagai bottom sheet; saat keyboard terbuka FAB disembunyikan dan diganti bar format di atas keyboard.
-- **FR-59c** Toast muncul di sisi berlawanan dari FAB agar tidak bertumpuk.
+- **FR-55** A single round floating button (FAB), 48px (52px on mobile), as the only permanent UI. Clicking opens a menu: Search, Pages, New page, Export, Import, Theme, Trash, Settings, and document meta.
+- **FR-56** The FAB can be dragged (mouse & touch). Movement < 5px counts as a click. On release, the FAB snaps to the nearest left/right edge (option: 4 corners). It cannot leave the screen; clamped 20px from the edges.
+- **FR-57** FAB position is stored relatively (`{ side, y: 0–1 }`) in `settings.fabPosition` and stays correct on resize. Default bottom-right. A "Reset position" button in Settings.
+- **FR-58** Menu/panel opening direction adapts to the FAB position so it always stays inside the viewport.
+- **FR-59** Auto-fade: 1 second after typing starts, the FAB dims (opacity 25%); it returns to full when the mouse moves, the pointer approaches, or the FAB is focused. Can be disabled in Settings.
+- **FR-59a** Accessible without dragging: `Ctrl/Cmd + .` opens the menu; `Alt + arrow` moves the FAB while focused.
+- **FR-59b** Mobile: menus & panels appear as bottom sheets; when the keyboard is open the FAB is hidden and replaced by a format bar above the keyboard.
+- **FR-59c** Toasts appear on the side opposite the FAB so they don't overlap.
 
-### 6.7 Info Dokumen (P1)
-- **FR-60** Jumlah kata, karakter, estimasi waktu baca ditampilkan di bagian bawah menu FAB.
-- **FR-61** Tanggal dibuat & terakhir diubah.
+### 6.7 Document Info (P1)
+- **FR-60** Word count, character count, and estimated reading time shown at the bottom of the FAB menu.
+- **FR-61** Created & last-modified dates.
 
 ### 6.8 PWA & Offline Support (P0)
 
-Karena semua data sudah ada di IndexedDB, satu-satunya yang perlu internet adalah **mengunduh aplikasinya**. Setelah kunjungan pertama, aplikasi harus bisa dibuka dan dipakai 100% tanpa koneksi.
+Since all data already lives in IndexedDB, the only thing that needs internet is **downloading the app**. After the first visit, the app must open and work 100% without a connection.
 
 **Installable**
-- **FR-70** Web App Manifest: `name`, `short_name`, `start_url: "/"`, `scope: "/"`, `display: "standalone"` (fallback `minimal-ui`), `theme_color` & `background_color` mengikuti tema (light `#FFFFFF`, dark `#191919`), `id` tetap.
-- **FR-71** Ikon lengkap: 192, 512, **maskable** 512, ikon monokrom, `apple-touch-icon` 180, favicon SVG.
-- **FR-72** Tombol **"Install app"** di menu FAB, hanya muncul bila event `beforeinstallprompt` tersedia dan app belum terpasang. Di iOS Safari tampilkan petunjuk "Share → Add to Home Screen".
-- **FR-73** Saat berjalan standalone, tidak ada UI tambahan — konsep zero chrome tetap berlaku (FAB tetap satu-satunya UI).
-- **FR-74** Manifest `shortcuts`: "New page" dan "Search" (long-press ikon app di Android / klik kanan di taskbar desktop).
+- **FR-70** Web App Manifest: `name`, `short_name`, `start_url: "/"`, `scope: "/"`, `display: "standalone"` (fallback `minimal-ui`), `theme_color` & `background_color` follow the theme (light `#FFFFFF`, dark `#191919`), fixed `id`.
+- **FR-71** Complete icons: 192, 512, **maskable** 512, monochrome icon, `apple-touch-icon` 180, SVG favicon.
+- **FR-72** **"Install app"** button in the FAB menu, shown only when the `beforeinstallprompt` event is available and the app isn't installed yet. On iOS Safari, show the hint "Share → Add to Home Screen".
+- **FR-73** When running standalone there is no extra UI — the zero-chrome concept still applies (the FAB remains the only UI).
+- **FR-74** Manifest `shortcuts`: "New page" and "Search" (long-press the app icon on Android / right-click in the desktop taskbar).
 
 **Offline**
-- **FR-75** Service worker melakukan **precache** app shell dan seluruh aset build (HTML, JS, CSS, font, ikon, bahasa syntax highlighting yang dipakai) saat instalasi.
-- **FR-76** Strategi cache:
+- **FR-75** The service worker **precaches** the app shell and all build assets (HTML, JS, CSS, fonts, icons, syntax-highlighting languages in use) on install.
+- **FR-76** Caching strategy:
 
-  | Resource | Strategi |
+  | Resource | Strategy |
   |---|---|
-  | App shell & aset build (hashed) | Precache, cache-first |
-  | Navigasi (HTML) | Cache-first ke `index.html` (SPA), fallback ke shell yang di-cache |
-  | Font lokal / Google Fonts | Cache-first, expire 1 tahun |
-  | Gambar dari URL eksternal di dokumen | Stale-while-revalidate, maks 100 entri / 50MB |
-  | Gambar upload lokal | Tidak lewat network — dibaca dari tabel `assets` IndexedDB sebagai `blob:` URL |
+  | App shell & build assets (hashed) | Precache, cache-first |
+  | Navigation (HTML) | Cache-first to `index.html` (SPA), fall back to the cached shell |
+  | Local fonts / Google Fonts | Cache-first, 1-year expiry |
+  | External image URLs in documents | Stale-while-revalidate, max 100 entries / 50MB |
+  | Locally uploaded images | No network — read from the `assets` IndexedDB table as `blob:` URLs |
 
-- **FR-77** Semua fitur inti (buat/edit/hapus dokumen, search, import/export `.md`, backup zip, ganti tema) wajib berfungsi offline. **Tidak ada fitur yang butuh internet.**
-- **FR-78** Tidak ada halaman "You're offline". Status offline hanya ditampilkan sebagai satu baris kecil di menu FAB ("Offline — semua tetap tersimpan di perangkat") agar tidak mengganggu.
-- **FR-79** Gambar eksternal yang gagal dimuat saat offline → tampil placeholder dengan URL dan ikon, bukan gambar rusak.
+- **FR-77** All core features (create/edit/delete documents, search, `.md` import/export, zip backup, theme switching) must work offline. **No feature requires internet.**
+- **FR-78** No "You're offline" page. Offline status is shown only as a small line in the FAB menu ("Offline — everything is still saved on this device") to stay unobtrusive.
+- **FR-79** External images that fail to load while offline → show a placeholder with the URL and an icon, not a broken image.
 
-**Update aplikasi**
-- **FR-80** Service worker baru **tidak** langsung mengambil alih (`skipWaiting` tidak otomatis) agar tidak mengganggu sesi menulis.
-- **FR-81** Saat versi baru siap, tampilkan dot kecil di FAB + item "Update tersedia — Muat ulang" di menu. Toast satu kali yang non-blocking.
-- **FR-82** Update diterapkan otomatis saat semua tab ditutup, atau segera bila pengguna memilih "Muat ulang" — **setelah** autosave terakhir selesai (flush antrean tulis ke IndexedDB dulu).
-- **FR-83** Migrasi skema IndexedDB (Dexie `version().upgrade()`) harus kompatibel mundur; bila tab lama masih terbuka dengan versi skema lama, tampilkan banner "Tutup tab lain untuk menyelesaikan update" (event `versionchange` / `blocked`).
+**App updates**
+- **FR-80** A new service worker does **not** take over immediately (no automatic `skipWaiting`) so writing sessions aren't disrupted.
+- **FR-81** When a new version is ready, show a small dot on the FAB + a "Update available — Reload" item in the menu. A one-time, non-blocking toast.
+- **FR-82** The update is applied automatically when all tabs are closed, or immediately if the user chooses "Reload" — **after** the last autosave finishes (flush the IndexedDB write queue first).
+- **FR-83** IndexedDB schema migrations (Dexie `version().upgrade()`) must be backward compatible; if an old tab is still open with the old schema version, show a banner "Close other tabs to finish the update" (`versionchange` / `blocked` events).
 
-**Integrasi OS (P1–P2)**
-- **FR-84** `file_handlers` di manifest: membuka file `.md` langsung dengan Inkwell dari file manager (Chromium desktop) — P1.
-- **FR-85** `share_target`: menerima teks/URL yang dibagikan dari aplikasi lain dan membuatnya sebagai dokumen baru — P2.
-- **FR-86** `launch_handler: { client_mode: "focus-existing" }` agar membuka app tidak membuat jendela duplikat — P1.
+**OS integration (P1–P2)**
+- **FR-84** `file_handlers` in the manifest: open `.md` files directly in Inkwell from the file manager (Chromium desktop) — P1.
+- **FR-85** `share_target`: receive text/URLs shared from other apps and create a new document from them — P2.
+- **FR-86** `launch_handler: { client_mode: "focus-existing" }` so opening the app doesn't create duplicate windows — P1.
 
-## 7. Model Data (IndexedDB)
+## 7. Data Model (IndexedDB)
 
-Database: `inkwell` · Versi skema: 1
+Database: `inkwell` · Schema version: 1
 
 ```ts
 // table: documents
@@ -162,12 +162,12 @@ interface Document {
   id: string;            // nanoid / uuid
   title: string;
   icon?: string;         // emoji
-  content: JSONContent;  // state editor (ProseMirror/BlockNote JSON)
-  markdown: string;      // cache markdown untuk search & export
+  content: JSONContent;  // editor state (ProseMirror/BlockNote JSON)
+  markdown: string;      // markdown cache for search & export
   pinned: boolean;
   createdAt: number;     // epoch ms
   updatedAt: number;
-  deletedAt: number | null; // null = aktif, angka = di trash
+  deletedAt: number | null; // null = active, number = in trash
 }
 
 // table: settings (key-value)
@@ -176,7 +176,7 @@ interface Setting {
   value: unknown;
 }
 
-// table: assets (gambar yang di-upload lokal)
+// table: assets (locally uploaded images)
 interface Asset {
   id: string;
   docId: string;
@@ -188,74 +188,74 @@ interface Asset {
 
 Index: `documents: id, updatedAt, deletedAt, pinned, title`
 
-Konten disimpan sebagai JSON editor (sumber kebenaran) + cache markdown. Alasan: JSON menjaga fidelitas block (callout, dll.), markdown dipakai untuk pencarian dan export.
+Content is stored as editor JSON (source of truth) + a markdown cache. Rationale: JSON preserves block fidelity (callouts, etc.); markdown is used for search and export.
 
-## 8. Rekomendasi Teknis
+## 8. Technical Recommendations
 
-| Lapisan | Pilihan | Catatan |
+| Layer | Choice | Notes |
 |---|---|---|
-| Framework | Next.js (static export) atau Vite + React | Tidak butuh server; bisa deploy ke Vercel/Netlify/GitHub Pages |
-| Styling | Tailwind CSS + shadcn/ui | Token warna via CSS variables untuk dark/light |
-| Editor | **BlockNote** (paling cepat untuk Notion-like) atau **Tiptap** (lebih fleksibel) | Keduanya berbasis ProseMirror, mendukung slash menu & drag handle |
-| Markdown | `remark` / converter bawaan editor | Untuk import/export |
-| Syntax highlight | Shiki atau lowlight | |
-| IndexedDB | **Dexie.js** + `dexie-react-hooks` (`useLiveQuery`) | liveQuery otomatis sinkron antar-tab |
-| Search | MiniSearch / FlexSearch (in-memory, dibangun dari cache markdown) | |
+| Framework | Next.js (static export) or Vite + React | No server needed; deployable to Vercel/Netlify/GitHub Pages |
+| Styling | Tailwind CSS + shadcn/ui | Color tokens via CSS variables for dark/light |
+| Editor | **BlockNote** (fastest to Notion-like) or **Tiptap** (more flexible) | Both are ProseMirror-based and support slash menus & drag handles |
+| Markdown | `remark` / the editor's built-in converter | For import/export |
+| Syntax highlight | Shiki or lowlight | |
+| IndexedDB | **Dexie.js** + `dexie-react-hooks` (`useLiveQuery`) | liveQuery syncs across tabs automatically |
+| Search | MiniSearch / FlexSearch (in-memory, built from the markdown cache) | |
 | Command palette | `cmdk` | |
-| Draggable FAB | Pointer Events manual, atau `@use-gesture/react` + `motion` (spring snap) | Hindari library drag berat; cukup pointerdown/move/up |
-| Popover/menu | Radix Popover / Floating UI (`flip`, `shift`) | Otomatis menyesuaikan arah buka terhadap posisi FAB |
-| Theme | `next-themes` atau script inline di `<head>` | Cegah flash of wrong theme |
-| Backup zip | `fflate` / `jszip` | |
-| PWA | **Serwist** (`@serwist/next`) untuk Next.js, atau `vite-plugin-pwa` (Workbox) untuk Vite | Mode `injectManifest` agar strategi cache & alur update bisa dikontrol; Next.js wajib `output: 'export'` |
+| Draggable FAB | Manual Pointer Events, or `@use-gesture/react` + `motion` (spring snap) | Avoid heavy drag libraries; pointerdown/move/up is enough |
+| Popover/menu | Radix Popover / Floating UI (`flip`, `shift`) | Automatically adjusts opening direction relative to the FAB position |
+| Theme | `next-themes` or an inline script in `<head>` | Prevents a flash of the wrong theme |
+| Zip backup | `fflate` / `jszip` | |
+| PWA | **Serwist** (`@serwist/next`) for Next.js, or `vite-plugin-pwa` (Workbox) for Vite | `injectManifest` mode so caching strategy & update flow are controllable; Next.js requires `output: 'export'` |
 
-## 9. Requirement Non-Fungsional
+## 9. Non-Functional Requirements
 
-- **Performa:** load awal < 200KB JS gzip untuk shell (editor di-lazy load); mengetik tanpa lag hingga dokumen 50.000 kata. Kunjungan berikutnya (dari cache service worker) tampil < 1 detik, termasuk saat offline.
-- **PWA:** lolos kriteria installability Chrome; skor Lighthouse PWA/Best Practices ≥ 90; app shell tetap berfungsi dalam mode pesawat.
-- **Privasi:** tidak ada network request membawa isi dokumen. Tidak ada analytics yang membaca konten.
-- **Aksesibilitas:** navigasi keyboard penuh, kontras WCAG AA di kedua tema, `prefers-reduced-motion` dihormati.
-- **Browser:** Chrome, Edge, Firefox, Safari 2 versi terakhir. Safari mode private: tampilkan peringatan bahwa data tidak persisten.
-- **Keandalan:** tulis ke IndexedDB dalam transaksi; bila gagal (quota penuh) tampilkan toast error + saran export.
+- **Performance:** initial load < 200KB JS gzip for the shell (editor lazy-loaded); typing without lag up to a 50,000-word document. Subsequent visits (from the service worker cache) render in < 1 second, including offline.
+- **PWA:** passes Chrome installability criteria; Lighthouse PWA/Best Practices score ≥ 90; the app shell keeps working in airplane mode.
+- **Privacy:** no network request carries document content. No analytics that read content.
+- **Accessibility:** full keyboard navigation, WCAG AA contrast in both themes, `prefers-reduced-motion` respected.
+- **Browsers:** last 2 versions of Chrome, Edge, Firefox, Safari. Safari private mode: show a warning that data isn't persistent.
+- **Reliability:** IndexedDB writes happen in transactions; on failure (quota full) show an error toast + suggest exporting.
 
 ## 10. Edge Cases
 
-- Storage penuh (`QuotaExceededError`) → toast + tombol export backup.
-- Browser menghapus data (non-persisted) → onboarding ringan menyarankan backup berkala.
-- Dua tab mengedit dokumen yang sama → last-write-wins per dokumen + banner "Dokumen diubah di tab lain".
-- Import file bukan `.md` / encoding aneh → tolak dengan pesan jelas.
-- Offline saat pertama kali membuka (belum pernah dikunjungi) → tidak bisa dicegah; dokumentasikan bahwa kunjungan pertama butuh internet.
-- Update service worker ketika ada perubahan yang belum tersimpan → tunda aktivasi sampai autosave selesai.
-- Pengguna menghapus cache/data situs dari pengaturan browser → service worker & IndexedDB ikut terhapus; ingatkan backup berkala di menu Data.
-- iOS: PWA yang terpasang di Home Screen punya storage terpisah dari tab Safari → jelaskan di onboarding install bahwa dokumen tidak otomatis berpindah; sarankan export/import backup.
-- Judul duplikat → diperbolehkan (id unik).
-- Semua dokumen dihapus → tampil empty state + tombol "Buat dokumen".
+- Storage full (`QuotaExceededError`) → toast + export backup button.
+- Browser evicts data (non-persisted) → light onboarding suggesting periodic backups.
+- Two tabs editing the same document → last-write-wins per document + banner "Document changed in another tab".
+- Importing a non-`.md` file / odd encoding → reject with a clear message.
+- Offline on the very first visit (never visited before) → can't be prevented; document that the first visit needs internet.
+- Service worker update while there are unsaved changes → delay activation until autosave finishes.
+- User clears site cache/data from browser settings → service worker & IndexedDB are wiped too; remind about periodic backups in the Data menu.
+- iOS: a PWA installed on the Home Screen has storage separate from Safari tabs → explain in the install onboarding that documents don't move automatically; suggest backup export/import.
+- Duplicate titles → allowed (ids are unique).
+- All documents deleted → show an empty state + a "Create document" button.
 
 ## 11. Keyboard Shortcuts
 
-| Aksi | Shortcut |
+| Action | Shortcut |
 |---|---|
-| Command palette / cari | `Ctrl/Cmd + K` |
-| Dokumen baru | `Ctrl/Cmd + Alt + N` |
-| Buka menu floating button | `Ctrl/Cmd + .` |
-| Pindahkan floating button (saat fokus) | `Alt + ← → ↑ ↓` |
-| Toggle tema | `Ctrl/Cmd + Shift + L` |
+| Command palette / search | `Ctrl/Cmd + K` |
+| New document | `Ctrl/Cmd + Alt + N` |
+| Open floating button menu | `Ctrl/Cmd + .` |
+| Move floating button (when focused) | `Alt + ← → ↑ ↓` |
+| Toggle theme | `Ctrl/Cmd + Shift + L` |
 | Export markdown | `Ctrl/Cmd + Shift + E` |
 | Bold / Italic / Code | `Ctrl/Cmd + B / I / E` |
-| Link | `Ctrl/Cmd + Shift + K`… atau paste URL di atas seleksi |
+| Link | `Ctrl/Cmd + Shift + K`… or paste a URL over a selection |
 
-## 12. Milestone
+## 12. Milestones
 
-| Fase | Cakupan | Estimasi |
+| Phase | Scope | Estimate |
 |---|---|---|
-| M1 — Fondasi | Setup proyek (static export), Dexie schema, canvas editor, floating button draggable + menu, tema dark/light, manifest + service worker dasar (precache shell) | 1 minggu |
-| M2 — Editor | BlockNote/Tiptap, slash menu, shortcut markdown, autosave | 1–2 minggu |
-| M3 — Manajemen | Multi-dokumen, rename, pin, trash, command palette + search | 1 minggu |
-| M4 — Portabilitas | Import/export `.md`, backup/restore zip | 1 minggu |
-| M5 — PWA & Polish | Strategi cache lengkap, alur update (dot di FAB + reload aman), tombol install, file handlers, uji mode pesawat, empty states, aksesibilitas, performa | 1–1,5 minggu |
+| M1 — Foundation | Project setup (static export), Dexie schema, editor canvas, draggable floating button + menu, dark/light theme, manifest + basic service worker (shell precache) | 1 week |
+| M2 — Editor | BlockNote/Tiptap, slash menu, markdown shortcuts, autosave | 1–2 weeks |
+| M3 — Management | Multiple documents, rename, pin, trash, command palette + search | 1 week |
+| M4 — Portability | `.md` import/export, zip backup/restore | 1 week |
+| M5 — PWA & Polish | Full caching strategy, update flow (FAB dot + safe reload), install button, file handlers, airplane-mode testing, empty states, accessibility, performance | 1–1.5 weeks |
 
-## 13. Pertanyaan Terbuka
+## 13. Open Questions
 
-- Nama produk final?
-- Pilih BlockNote (cepat jadi) atau Tiptap (kontrol penuh)?
-- Perlu nested pages (dokumen di dalam dokumen) di v2?
-- Perlu opsi sinkronisasi opsional (mis. ke folder lokal via File System Access API) di masa depan?
+- Final product name?
+- BlockNote (fast to build) or Tiptap (full control)?
+- Nested pages (documents inside documents) in v2?
+- Optional sync in the future (e.g., to a local folder via the File System Access API)?
